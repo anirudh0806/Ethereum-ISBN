@@ -1,0 +1,245 @@
+<html>
+
+
+<body>
+
+
+
+    <head>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;500&display=swap" rel="stylesheet">
+        <style>
+            .main {
+                color: white;
+                background-color: #1D2833;
+                padding: 1.5rem;
+                font-family: 'Montserrat', sans-serif;
+                text-align: center;
+                font-size: 1.5rem;
+                font-weight: lighter;
+            }
+
+
+            .name-container {
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+
+            body {
+                background-color: #26313C;
+            }
+
+            #title {
+                color: white;
+                background-color: #1D2833;
+                padding: 1.5rem;
+                font-family: 'Montserrat', sans-serif;
+                text-align: center;
+
+                font-size: 1.5rem;
+                font-weight: lighter;
+            }
+
+            #verify,
+            #checking {
+                background-color: #e7e7e7;
+                color: black;
+                font-size: 25px;
+            }
+
+            #Check,
+            #Given {
+                font-size: 30px;
+                font-family: Arial, Helvetica, sans-serif;
+                font-weight: 700;
+            }
+        </style>
+    </head>
+    <div class="main">
+        <div id="title">
+            <center>
+                <h1 style="color: aliceblue;">ISBN CHECKING WEB- APP</h1><br>
+            </center>
+        </div>
+
+
+        <input type="text" id="amount" size="30" style="font-size: 18pt; height: 40px;
+width:280px">
+
+        <p>Is it a valid ISBN? </p>
+        <p id='Check'></p>
+        <p>Your current ISBN number is:</p>
+        <p id='Given'></p><br>
+        <button id='verify'>VERIFY</button>
+        <br><br>
+
+        <button id='checking'>View current number</button>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0- beta.36/dist/web3.min.js"
+            integrity="sha256-nWBTbvxhJgjslRyuAKJHK+XcZPlCnmIAAMixz6EefVk=" crossorigin="anonymous"></script>
+        <script>
+            var contract;
+            $(document).ready(function () {
+                web3 = new Web3(web3.currentProvider); var address =
+                    "0x931BfeDBbeFdeDD4D9c2BE5DBC6F22006C532A70";
+                var abi = [
+                    {
+                        "constant": false, "inputs": [
+                            {
+                                "name": "num",
+                                "type": "int256"
+                            }
+                        ],
+                        "name": "EnterNumCheck", "outputs": [],
+                        "payable": false, "stateMutability": "nonpayable", "type": "function"
+                    },
+                    {
+                        "inputs": [], "payable": false,
+                        "stateMutability": "nonpayable",
+
+                        "type": "constructor"
+
+                    },
+                    {
+
+                        "constant": true, "inputs": [],
+                        "name": "getNumber", "outputs": [
+                            {
+                                "name": "",
+                                "type": "int256"
+                            }
+                        ],
+                        "payable": false, "stateMutability": "view", "type": "function"
+                    },
+                    {
+
+                        "constant": true, "inputs": [],
+                        "name": "validateNumber", "outputs": [
+                            {
+                                "name": "",
+                                "type": "string"
+                            }
+                        ],
+                        "payable": false, "stateMutability": "view", "type": "function"
+                    }
+
+                ];
+
+
+
+                contract = new web3.eth.Contract(abi, address);
+
+
+                contract.methods.validateNumber().call().then(function (bal) {
+                    $('#Check').html("" + bal);
+                    if (bal == "no") {
+                        alert('Wrong ISBN! The weighted sum of all the numbers in the input is not divisible by 11. Please check and enter input appropriately.');
+                    }
+                }
+                )
+                // contract.methods.getNumber().call().then(function (bal1) {
+                //	$('#Given').html("Your current number is=" + bal1)
+
+
+                // }
+
+
+                // )
+            })
+
+
+            $('#verify').click(function () {
+                var amt = 0;
+                amt = parseInt($('#amount').val());
+
+
+                web3.eth.getAccounts().then(function (accounts) {
+                    var acc = accounts[0]; return
+                    contract.methods.EnterNumCheck(amt).send({ from: acc });
+                }).then(function (tx) {
+                    console.log(tx);
+
+                    setTimeout(function () {
+                        alert('Reloading Page to obtain latest data!'); location.reload(true);
+                    }, 500);
+                }).catch(function (tx) {
+                    console.log(tx);
+                })
+
+            })
+
+
+            $('#checking').click(function () {
+                web3 = new Web3(web3.currentProvider); var address =
+                    "0x931BfeDBbeFdeDD4D9c2BE5DBC6F22006C532A70";
+                var abi = [
+                    {
+                        "constant": false, "inputs": [
+                            {
+                                "name": "num",
+                                "type": "int256"
+                            }
+                        ],
+                        "name": "EnterNumCheck", "outputs": [],
+                        "payable": false, "stateMutability": "nonpayable", "type": "function"
+                    },
+
+                    {
+
+                        "inputs": [], "payable": false,
+                        "stateMutability": "nonpayable", "type": "constructor"
+                    },
+                    {
+
+                        "constant": true, "inputs": [],
+                        "name": "getNumber", "outputs": [
+                            {
+                                "name": "",
+                                "type": "int256"
+                            }
+                        ],
+                        "payable": false, "stateMutability": "view", "type": "function"
+                    },
+                    {
+
+                        "constant": true, "inputs": [],
+                        "name": "validateNumber", "outputs": [
+                            {
+                                "name": "",
+                                "type": "string"
+                            }
+                        ],
+                        "payable": false,
+
+                        "stateMutability": "view", "type": "function"
+                    }
+
+                ];
+
+
+                contract = new web3.eth.Contract(abi, address);
+
+
+
+
+                contract.methods.getNumber().call().then(function (bal1) {
+                    $('#Given').html(" " + bal1)
+
+
+                }
+
+
+
+
+                )
+
+            })
+        </script>
+
+    </div>
+</body>
+
+
+</html>
